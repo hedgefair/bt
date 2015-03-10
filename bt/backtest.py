@@ -242,7 +242,7 @@ class Result(ffn.GroupStats):
         self[key].display_monthly_returns()
 
     def plot_weights(self, backtest=0, filter=None,
-                     figsize=(15, 5), **kwds):
+                     figsize=(10, 4), **kwds):
         """
         Plots the weights of a given backtest over time.
 
@@ -266,7 +266,7 @@ class Result(ffn.GroupStats):
         data.plot(figsize=figsize, **kwds)
 
     def plot_security_weights(self, backtest=0, filter=None,
-                              figsize=(15, 5), **kwds):
+                              figsize=(10, 4), **kwds):
         """
         Plots the security weights of a given backtest over time.
 
@@ -335,7 +335,7 @@ class RandomBenchmarkResult(Result):
         self.b_stats = self.stats[self.base_name]
 
     def plot_histogram(self, statistic='monthly_sharpe',
-                       figsize=(15, 5), title=None,
+                       figsize=(10, 4), title=None,
                        bins=20, **kwargs):
         """
         Plots the distribution of a given statistic. The histogram
