@@ -241,8 +241,37 @@ class Result(ffn.GroupStats):
         key = self._get_backtest(backtest)
         self[key].display_monthly_returns()
 
+    def plot_drawdowns(self, backtest=0, logy=True, figsize=(9, 4)):
+        """
+        Plots performance and drawdowns of a given backtest
+
+        Args:
+            * backtest (str, int): Backtest. Can be either a index (int) or the
+                name (str)
+            * figsize ((width, height)): figure size
+
+        """
+        bst = self.backtests[self._get_backtest(backtest)]
+        p = bst.stats.prices
+        d = bst.stats.drawdown
+
+        if figsize is not None:
+            plt.figure(figsize=figsize)
+        ax = plt.gca()
+
+        plt.fill_between(d.index, d.values, color='r', alpha=0.5)
+        plt.ylim([min(plt.ylim()), 0])
+        plt.title(bst.name)
+
+        ax2 = ax.twinx()
+        p.plot(ax=ax2, logy=logy, legend=False, lw=1)
+        ax2.grid(None)
+        ax2.axhline(100, color='k', ls='--', lw=0.5)
+
+        plt.tight_layout()
+
     def plot_weights(self, backtest=0, filter=None,
-                     figsize=(10, 4), **kwds):
+                     figsize=(9, 4), **kwds):
         """
         Plots the weights of a given backtest over time.
 
@@ -266,7 +295,7 @@ class Result(ffn.GroupStats):
         data.plot(figsize=figsize, **kwds)
 
     def plot_security_weights(self, backtest=0, filter=None,
-                              figsize=(10, 4), **kwds):
+                              figsize=(9, 4), **kwds):
         """
         Plots the security weights of a given backtest over time.
 
@@ -335,7 +364,7 @@ class RandomBenchmarkResult(Result):
         self.b_stats = self.stats[self.base_name]
 
     def plot_histogram(self, statistic='monthly_sharpe',
-                       figsize=(10, 4), title=None,
+                       figsize=(9, 4), title=None,
                        bins=20, **kwargs):
         """
         Plots the distribution of a given statistic. The histogram
