@@ -476,7 +476,8 @@ class StrategyBase(Node):
                 if c._issec and not c._needupdate:
                     continue
                 c.update(date, data, inow)
-                val += c.value
+                # Direct access to a protected property - much faster
+                val += c._value
 
         if self.root == self:
             if (val < 0) and not self.bankrupt:
@@ -518,7 +519,9 @@ class StrategyBase(Node):
                 if c._issec and not c._needupdate:
                     continue
                 try:
-                    c._weight = c.value / val
+                    # Direct access to a protected property - much faster
+                    # We don't need to update value here
+                    c._weight = c._value / val
                 except ZeroDivisionError:
                     c._weight = 0.0
 
