@@ -262,13 +262,19 @@ class Result(ffn.GroupStats):
         plt.fill_between(d.index, d.values, color='r', alpha=0.5)
         plt.ylim([min(plt.ylim()), 0])
         plt.title(bst.name)
+        ax.grid(True, which='major', axis='both')
 
         ax2 = ax.twinx()
-        p.plot(ax=ax2, logy=logy, legend=False, lw=1)
-        ax2.grid(None)
+        # For some reason p.plot() may not work well with fill_between
+        if logy:
+            ax2.semilogy(p.index, p.values, lw=1)
+        else:
+            ax2.plot(p.index, p.values, lw=1)
+        ax2.grid(False)
         ax2.axhline(100, color='k', ls='--', lw=0.5)
 
         plt.tight_layout()
+        return ax, ax2
 
     def plot_weights(self, backtest=0, filter=None,
                      figsize=(9, 4), **kwds):
