@@ -10,4 +10,4 @@ from .extras import save_results, read_results
 import ffn
 from ffn import utils, data, get, merge
 
-__version__ = (0, 1, 7)
+__version__ = (0, 1, 8)
