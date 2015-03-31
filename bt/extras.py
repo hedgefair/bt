@@ -38,13 +38,14 @@ class BacktestLoaded(bt.backtest.Backtest):
     Dummy class for loading backtests' data from file
     """
 
-    def __init__(self, name, data, positions, weights):
+    def __init__(self, name, data, positions, weights, herfindahl):
         self.name = name
         self.data = pd.DataFrame()
         self._strategy = StrategyLoaded(data, positions)
 
         self._weights = weights
         self._sweights = weights
+        self._herfindahl = herfindahl
         self.stats = self.strategy.prices.calc_perf_stats()
 
     @property
@@ -59,19 +60,25 @@ class BacktestLoaded(bt.backtest.Backtest):
     def security_weigths(self):
         return self._sweights
 
+    @property
+    def herfindahl_index(self):
+        return self._herfindahl
 
-def save_results(results, fname, positions=False, weights=False,
+
+def save_results(results, fname, positions=False, weights=False, herfindahl=False,
                  complevel=5, complib='blosc'):
     """
     Function that saves the following data to HDF5 file:
     - strategy's data (price, value, cash, fees),
     - positions for each security (if positions==True)
     - weights of each security (if weights==True)
+    - Herfindahl index (if herfindahl==True)
 
     Convention for key-names in file:
         /backtest-name/data
         /backtest-name/positions
         /backtest-name/weights
+        /backtest-name/herfindahl
     """
 
     for bst_name in results.backtests:
@@ -84,6 +91,9 @@ def save_results(results, fname, positions=False, weights=False,
         if weights:
             bst.security_weights.to_hdf(fname, bst.name+'/weights',
                                         complevel=complevel, complib=complib)
+        if herfindahl:
+            bst.herfindahl_index.to_hdf(fname, bst.name+'/herfindahl',
+                                        complevel=complevel, complib=complib)
 
 
 def read_results(fname):
@@ -94,6 +104,7 @@ def read_results(fname):
         /backtest-name/data
         /backtest-name/positions
         /backtest-name/weights
+        /backtest-name/herfindahl
     """
 
     # Get all keys and unique names of backtests
@@ -117,7 +128,13 @@ def read_results(fname):
         except KeyError:
             df_sec_weights = pd.DataFrame()
 
-        bt0 = BacktestLoaded(bn, df_data, df_positions, df_sec_weights)
+        try:
+            df_herfindahl = pd.read_hdf(fname, '/%s/herfindahl' %(bn))
+        except KeyError:
+            df_herfindahl = pd.DataFrame()
+
+        bt0 = BacktestLoaded(bn, df_data, df_positions, df_sec_weights,
+                             df_herfindahl)
         backtests.append(bt0)
 
     return bt.backtest.Result(*backtests)
