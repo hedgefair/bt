@@ -7,6 +7,9 @@ import pandas as pd
 import numpy as np
 import random
 
+DEFAULT_LOOKBACK = pd.DateOffset(months=3)
+DEFAULT_LAG = pd.DateOffset(days=1)
+
 
 def run_always(f):
     """
@@ -522,7 +525,7 @@ class SelectHasData(Algo):
 
     """
 
-    def __init__(self, lookback=pd.DateOffset(months=3),
+    def __init__(self, lookback=DEFAULT_LOOKBACK,
                  min_count=None, include_no_data=False):
         super(SelectHasData, self).__init__()
         self.lookback = lookback
@@ -628,9 +631,8 @@ class SelectMomentum(AlgoStack):
 
     """
 
-    def __init__(self, n, lookback=pd.DateOffset(months=3),
-                 lag=pd.DateOffset(days=0), sort_descending=True,
-                 all_or_none=False):
+    def __init__(self, n, lookback=DEFAULT_LOOKBACK, lag=DEFAULT_LAG,
+                 sort_descending=True, all_or_none=False):
         super(SelectMomentum, self).__init__(
             StatTotalReturn(lookback=lookback, lag=lag),
             SelectN(n=n, sort_descending=sort_descending,
@@ -751,8 +753,7 @@ class StatTotalReturn(Algo):
 
     """
 
-    def __init__(self, lookback=pd.DateOffset(months=3),
-                 lag=pd.DateOffset(days=0)):
+    def __init__(self, lookback=DEFAULT_LOOKBACK, lag=DEFAULT_LAG):
         super(StatTotalReturn, self).__init__()
         self.lookback = lookback
         self.lag = lag
@@ -884,8 +885,7 @@ class WeighInvVol(Algo):
 
     """
 
-    def __init__(self, lookback=pd.DateOffset(months=3),
-                 lag=pd.DateOffset(days=0)):
+    def __init__(self, lookback=DEFAULT_LOOKBACK, lag=DEFAULT_LAG):
         super(WeighInvVol, self).__init__()
         self.lookback = lookback
         self.lag = lag
@@ -936,9 +936,9 @@ class WeighMeanVar(Algo):
 
     """
 
-    def __init__(self, lookback=pd.DateOffset(months=3),
+    def __init__(self, lookback=DEFAULT_LOOKBACK, lag=DEFAULT_LAG,
                  bounds=(0., 1.), covar_method='ledoit-wolf',
-                 rf=0., lag=pd.DateOffset(days=0)):
+                 rf=0.):
         super(WeighMeanVar, self).__init__()
         self.lookback = lookback
         self.lag = lag
